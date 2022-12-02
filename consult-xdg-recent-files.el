@@ -107,9 +107,9 @@ https://www.freedesktop.org/wiki/Specifications/desktop-bookmark-spec/"
     (if (file-readable-p data-file)
         (delq nil
               (mapcar (lambda (bookmark-node)
-                        (when-let ((local-path (string-remove-prefix
-                                                "file://"
-                                                (dom-attr bookmark-node 'href))))
+                        (when-let* ((href (dom-attr bookmark-node 'href))
+                                    (local-path (and (string-prefix-p "file://" href)
+                                                     (string-remove-prefix "file://" href))))
                           (let ((full-file-name (decode-coding-string
                                                  (url-unhex-string local-path)
                                                  'utf-8)))
