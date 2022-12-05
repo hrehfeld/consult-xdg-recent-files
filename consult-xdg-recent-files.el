@@ -107,9 +107,9 @@ https://www.freedesktop.org/wiki/Specifications/desktop-bookmark-spec/"
     (if (file-readable-p data-file)
         (delq nil
               (mapcar (lambda (bookmark-node)
-                        (when-let ((local-path (string-remove-prefix
-                                                "file://"
-                                                (dom-attr bookmark-node 'href))))
+                        (when-let* ((href (dom-attr bookmark-node 'href))
+                                    (local-path (and (string-prefix-p "file://" href)
+                                                     (string-remove-prefix "file://" href))))
                           (let ((full-file-name (decode-coding-string
                                                  (url-unhex-string local-path)
                                                  'utf-8)))
@@ -121,7 +121,8 @@ https://www.freedesktop.org/wiki/Specifications/desktop-bookmark-spec/"
                                                        (point-min)
                                                        (point-max)))
                                             'bookmark))))
-      (message "consult-xdg-recent-files: List of XDG recent files not found"))))
+      (message "consult-xdg-recent-files: List of XDG recent files not found")
+      nil)))
 
 
 (defun consult-xdg-recent-files--recent-system-files ()
@@ -131,7 +132,8 @@ https://www.freedesktop.org/wiki/Specifications/desktop-bookmark-spec/"
      (consult-xdg-recent-files--xdg-recent-file-list))
     (t
      (message "consult-xdg-recent-files: \"%s\" system currently unsupported"
-              system-type))))
+              system-type)
+     nil)))
 
 (defun consult-xdg-recent-files--recent-files-sort (file-list)
   "Sort the FILE-LIST by modification time, from most recent to least recent."
